@@ -3,8 +3,8 @@
     <div class="illustration-card">
       <!-- 占位图片，可替换为实际图片 -->
       <img
-          src="https://via.placeholder.com/300x200.png?text=MoeCTF+Illustration"
-          alt="MoeCTF插画"
+          src="/images/logo.jpg"
+          alt="HTUCTF插画"
           class="illustration-img"
       />
       <div class="illustration-label">

@@ -13,7 +13,8 @@ export default defineConfig({
   ],
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './')
+      '@': path.resolve(__dirname, './'),
+      'vue-router': 'vue-router/dist/vue-router.esm-bundler.js'
     },
   },
 })
