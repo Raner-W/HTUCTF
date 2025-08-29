@@ -5,6 +5,8 @@ import CTFTeamInfo from '@/components/ui/test/CTFTeamInfo.vue'
 import LoginView from '@/components/ui/test/LoginView.vue'
 import RegisterView from '@/components/ui/test/RegisterView.vue'
 import Profile from "@/components/ui/test/Profile.vue";
+import Challenges from "@/components/ui/test/challenges.vue";
+import ChallengesView from "@/components/ui/test/ChallengesView.vue";
 const routes = [
     {
         path: '/',
@@ -36,6 +38,12 @@ const routes = [
         name: 'Profile',
         component: Profile
     },
+    {
+        path: '/challenges',
+        name: 'Challenges',
+        component: ChallengesView
+    },
+
 ]
 
 const router = createRouter({
