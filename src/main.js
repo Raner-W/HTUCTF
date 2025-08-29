@@ -1,8 +1,14 @@
 import { createApp } from 'vue'
+import { createPinia } from 'pinia' // 导入Pinia
 import App from './App.vue'
-import router from './router' // 导入路由配置
+import router from './router'
 
-// 正确的方式：创建应用实例并使用路由
+// 创建应用实例
 const app = createApp(App)
+
+// 创建Pinia实例并使用
+const pinia = createPinia()
+app.use(pinia)
 app.use(router)
+
 app.mount('#app')
