@@ -1,5 +1,5 @@
 <template>
-  <LayoutWithSidebar>
+  <indexSidebarLayout>
     <div class="ctf-center">
       <!-- 战队信息 -->
       <section class="card">
@@ -62,15 +62,15 @@
         </div>
       </section>
     </div>
-  </LayoutWithSidebar>
+  </indexSidebarLayout>
 </template>
 
 <script>
-import LayoutWithSidebar from './LayoutWithSidebar.vue';
+import indexSidebarLayout from '@/components/ui/layouts/indexSidebarLayout/indexSidebarLayout.vue';
 
 export default {
   name: "CTFTeamInfo",
-  components: {LayoutWithSidebar},
+  components: {indexSidebarLayout},
   data() {
     return {
       inviteCode: "Quantum-b4e36cda-ab36-4fc0-93a4-c5f3588e0775",
@@ -102,8 +102,8 @@ export default {
   methods: {
     copy(text) {
       navigator.clipboard?.writeText(text)
-        .then(() => alert("邀请码已复制"))
-        .catch(() => alert("复制失败，请手动复制"));
+          .then(() => alert("邀请码已复制"))
+          .catch(() => alert("复制失败，请手动复制"));
     }
   }
 }

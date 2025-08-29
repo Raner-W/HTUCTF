@@ -1,5 +1,5 @@
 <template>
-  <LayoutWithSidebar>
+  <indexSidebarLayout>
     <div class="profile-container">
       <div class="profile-card">
         <!-- 头像与基本信息 -->
@@ -37,13 +37,13 @@
         </div>
       </div>
     </div>
-  </LayoutWithSidebar>
+  </indexSidebarLayout>
 </template>
 
 <script setup>
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/src/stores/auth.js';
-import LayoutWithSidebar from './LayoutWithSidebar.vue';
+import indexSidebarLayout from '@/components/ui/layouts/indexSidebarLayout/indexSidebarLayout.vue';
 
 const authStore = useAuthStore();
 const router = useRouter();

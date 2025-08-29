@@ -1,5 +1,5 @@
 <template>
-  <LayoutWithSidebar>
+  <indexSidebarLayout>
     <div class="leaderboard-view-container">
       <div class="header">
         <h1>排行榜</h1>
@@ -12,32 +12,32 @@
 
       <!-- 曲线图组件 -->
       <div class="chart-container">
-        <ScoreChart :chart-data="chartData" :selected-team="selectedTeam" @team-selected="handleTeamSelected" />
+        <leaderboardScoreChartComponent :chart-data="chartData" :selected-team="selectedTeam" @team-selected="handleTeamSelected" />
       </div>
 
       <!-- 排行榜表格组件 -->
       <div class="table-container">
-        <LeaderboardTable
+        <leaderboardTableComponent
             :leaderboard-data="filteredData"
             :highlighted-id="selectedTeam"
             @row-clicked="handleRowClicked"
         />
       </div>
     </div>
-  </LayoutWithSidebar>
+  </indexSidebarLayout>
 </template>
 
 <script>
-import LayoutWithSidebar from './LayoutWithSidebar.vue';
-import LeaderboardTable from './LeaderboardTable.vue';
-import ScoreChart from './ScoreChart.vue';
+import indexSidebarLayout from "@/components/ui/layouts/indexSidebarLayout/indexSidebarLayout.vue";
+import leaderboardTableComponent from '@/components/ui/components/leaderboardComponent/leaderboardTableComponent.vue';
+import leaderboardScoreChartComponent from '@/components/ui/components/leaderboardComponent/leaderboardScoreChartComponent.vue';
 
 export default {
   name: "LeaderboardView",
   components: {
-    LayoutWithSidebar,
-    LeaderboardTable,
-    ScoreChart
+    indexSidebarLayout,
+    leaderboardTableComponent,
+    leaderboardScoreChartComponent
   },
   data() {
     return {

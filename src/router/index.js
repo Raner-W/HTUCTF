@@ -1,17 +1,16 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import CTFIndex from '@/components/ui/test/CTFIndex.vue'
-import LeaderboardView from '@/components/ui/test/LeaderboardView.vue'
-import CTFTeamInfo from '@/components/ui/test/CTFTeamInfo.vue'
-import LoginView from '@/components/ui/test/LoginView.vue'
-import RegisterView from '@/components/ui/test/RegisterView.vue'
-import Profile from "@/components/ui/test/Profile.vue";
-import Challenges from "@/components/ui/test/challenges.vue";
-import ChallengesView from "@/components/ui/test/ChallengesView.vue";
+import IndexView from "@/components/ui/views/indexView/indexView.vue";
+import LeaderboardView from '@/components/ui/views/leaderboardView/leaderboardView.vue'
+import CTFTeamInfo from '@/components/ui/views/teamView/teamView.vue'
+import LoginView from '@/components/ui/views/loginView/loginView.vue'
+import RegisterView from '@/components/ui/views/registerView/registerView.vue'
+import Profile from "@/components/ui/views/profileView/profileView.vue";
+import ChallengeView from "@/components/ui/views/challengeView/challengeView.vue";
 const routes = [
     {
         path: '/',
-        name: 'Home',
-        component: CTFIndex
+        name: 'index',
+        component: IndexView
     },
     {
         path: '/leaderboard',
@@ -39,9 +38,9 @@ const routes = [
         component: Profile
     },
     {
-        path: '/challenges',
-        name: 'Challenges',
-        component: ChallengesView
+        path: '/challenge',
+        name: 'Challenge',
+        component: ChallengeView
     },
 
 ]

@@ -1,76 +1,77 @@
 <template>
-  <aside class="ctf-sidebar">
-    <div class="sidebar-header">
-      <span class="logo">HTUCTF</span>
-      <span class="subtitle">河师大CTF平台</span>
-    </div>
-
-    <nav class="sidebar-nav">
-      <router-link to="/challenges" class="nav-item">
-        <span class="nav-icon">📝</span>
-        <span class="nav-text">题目</span>
-      </router-link>
-      <router-link to="/team" class="nav-item">
-        <span class="nav-icon">👥</span>
-        <span class="nav-text">队伍管理</span>
-      </router-link>
-      <router-link to="/leaderboard" class="nav-item">
-        <span class="nav-icon">🏆</span>
-        <span class="nav-text">排行榜</span>
-      </router-link>
-    </nav>
-
-    <div class="sidebar-footer">
-      <button class="footer-btn" @click="toggleTheme">
-        <span class="btn-icon">{{ isDarkMode ? '☀️' : '🌙' }}</span>
-        <span class="btn-text">{{ isDarkMode ? '日间模式' : '黑夜模式' }}</span>
-      </button>
-
-      <button class="footer-btn">
-        <span class="btn-icon">🌐</span>
-        <span class="btn-text">切换语言</span>
-      </button>
-
-      <!-- 个人中心下拉菜单 -->
-      <div class="profile-container">
-        <div class="footer-btn profile-btn" @click="toggleProfileDropdown">
-          <span class="btn-icon">👤</span>
-          <span class="btn-text">个人中心</span>
-          <span class="arrow">{{ isProfileOpen ? '▲' : '▼' }}</span>
-        </div>
-
-        <transition name="dropdown">
-          <div class="profile-dropdown" v-if="isProfileOpen">
-            <div class="dropdown-content">
-              <template v-if="!authStore.isLoggedIn">
-                <!-- 原有登录按钮（跳转登录页） -->
-                <button class="dropdown-item" @click="handleLogin">
-                  <span class="dropdown-icon">🔑</span>
-                  登录（跳转页面）
-                </button>
-                <!-- 新增：前端模拟登录按钮（仅开发用） -->
-                <button class="dropdown-item" @click="mockLogin">
-                  <span class="dropdown-icon">📌</span>
-                  模拟登录（测试）
-                </button>
-              </template>
-              <template v-else>
-                <!-- 登录后显示的内容（不变） -->
-                <button class="dropdown-item" @click="handleProfile">
-                  <span class="dropdown-icon">👤</span>
-                  个人信息 ({{ authStore.userInfo?.username }})
-                </button>
-                <button class="dropdown-item" @click="handleLogout">
-                  <span class="dropdown-icon">🚪</span>
-                  登出
-                </button>
-              </template>
-            </div>
-          </div>
-        </transition>
+  <div class="ctf-container">
+    <aside class="ctf-sidebar">
+      <div class="sidebar-header">
+        <span class="logo">HTUCTF</span>
+        <span class="subtitle">河师大CTF平台</span>
       </div>
-    </div>
-  </aside>
+
+      <nav class="sidebar-nav">
+        <router-link to="/challenge" class="nav-item">
+          <span class="nav-icon">📝</span>
+          <span class="nav-text">题目</span>
+        </router-link>
+        <router-link to="/team" class="nav-item">
+          <span class="nav-icon">👥</span>
+          <span class="nav-text">队伍管理</span>
+        </router-link>
+        <router-link to="/leaderboard" class="nav-item">
+          <span class="nav-icon">🏆</span>
+          <span class="nav-text">排行榜</span>
+        </router-link>
+      </nav>
+
+      <div class="sidebar-footer">
+        <button class="footer-btn" @click="toggleTheme">
+          <span class="btn-icon">{{ isDarkMode ? '☀️' : '🌙' }}</span>
+          <span class="btn-text">{{ isDarkMode ? '日间模式' : '黑夜模式' }}</span>
+        </button>
+
+        <button class="footer-btn">
+          <span class="btn-icon">🌐</span>
+          <span class="btn-text">切换语言</span>
+        </button>
+
+        <div class="profile-container">
+          <div class="footer-btn profile-btn" @click="toggleProfileDropdown">
+            <span class="btn-icon">👤</span>
+            <span class="btn-text">个人中心</span>
+            <span class="arrow">{{ isProfileOpen ? '▲' : '▼' }}</span>
+          </div>
+
+          <transition name="dropdown">
+            <div class="profile-dropdown" v-if="isProfileOpen">
+              <div class="dropdown-content">
+                <template v-if="!authStore.isLoggedIn">
+                  <button class="dropdown-item" @click="handleLogin">
+                    <span class="dropdown-icon">🔑</span>
+                    登录（跳转页面）
+                  </button>
+                  <button class="dropdown-item" @click="mockLogin">
+                    <span class="dropdown-icon">📌</span>
+                    模拟登录（测试）
+                  </button>
+                </template>
+                <template v-else>
+                  <button class="dropdown-item" @click="handleProfile">
+                    <span class="dropdown-icon">👤</span>
+                    个人信息 ({{ authStore.userInfo?.username }})
+                  </button>
+                  <button class="dropdown-item" @click="handleLogout">
+                    <span class="dropdown-icon">🚪</span>
+                    登出
+                  </button>
+                </template>
+              </div>
+            </div>
+          </transition>
+        </div>
+      </div>
+    </aside>
+    <main class="ctf-content">
+      <slot></slot>
+    </main>
+  </div>
 </template>
 
 <script setup>
@@ -84,21 +85,18 @@ const isProfileOpen = ref(false);
 const isDarkMode = ref(false);
 
 const mockLogin = () => {
-  // 其他代码不变，新增模拟登录方法
   authStore.login({
     username: 'CTF玩家',
     id: 1001,
-    avatar: '👤' // 可自定义其他信息
+    avatar: '👤'
   });
-  isProfileOpen.value = false; // 关闭下拉菜单
+  isProfileOpen.value = false;
 };
 
-// 切换下拉菜单
 const toggleProfileDropdown = () => {
   isProfileOpen.value = !isProfileOpen.value;
 };
 
-// 点击页面其他地方关闭下拉菜单
 const closeDropdown = (event) => {
   const profileContainer = document.querySelector('.profile-container');
   if (profileContainer && !profileContainer.contains(event.target)) {
@@ -106,32 +104,27 @@ const closeDropdown = (event) => {
   }
 };
 
-// 切换主题
 const toggleTheme = () => {
   isDarkMode.value = !isDarkMode.value;
   document.body.classList.toggle('dark-theme', isDarkMode.value);
 };
 
-// 登录（跳转登录页）
 const handleLogin = () => {
   router.push('/login');
   isProfileOpen.value = false;
 };
 
-// 个人信息（跳转个人页）
 const handleProfile = () => {
   router.push('/profile');
   isProfileOpen.value = false;
 };
 
-// 登出（调用 Store 方法）
 const handleLogout = () => {
   authStore.logout();
   isProfileOpen.value = false;
   router.push('/');
 };
 
-// 添加和移除事件监听器
 onMounted(() => {
   document.addEventListener('click', closeDropdown);
 });
@@ -142,6 +135,30 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
+.ctf-container {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  font-family: "Microsoft YaHei", sans-serif;
+  background: #f0fdf4;
+}
+
+.ctf-content {
+  flex: 1;
+  padding: 30px 40px;
+  overflow-y: auto;
+  box-sizing: border-box;
+  margin-left: 240px;
+  transition: margin-left 0.3s ease;
+}
+
+@media (max-width: 1024px) {
+  .ctf-content {
+    margin-left: 0;
+    padding: 20px;
+  }
+}
+
 .ctf-sidebar {
   width: 240px;
   height: 100vh;
@@ -155,7 +172,6 @@ onUnmounted(() => {
   left: 0;
   top: 0;
   z-index: 1000;
-  /* 移除 overflow-y: auto 以防止下拉菜单被裁剪 */
 }
 
 .sidebar-header {
@@ -184,7 +200,6 @@ onUnmounted(() => {
 .sidebar-nav {
   flex: 1;
   padding: 0 16px;
-  /* 添加滚动条以防内容过长 */
   overflow-y: auto;
 }
 
@@ -240,8 +255,8 @@ onUnmounted(() => {
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   padding-top: 24px;
   margin-top: auto;
-  padding-bottom: 40px; /* 增大底部内边距，让内容离元素下边缘更远 */
-  margin-bottom: 15px; /* 增加底部外边距，让整个元素离下边界更远 */
+  padding-bottom: 40px;
+  margin-bottom: 15px;
   position: relative;
   z-index: 1;
 }
@@ -296,16 +311,14 @@ onUnmounted(() => {
   transition: transform 0.3s ease;
 }
 
-/* 个人中心下拉菜单 - 调整为右上位置 */
 .profile-dropdown {
   position: absolute;
-  top: auto; /* 取消原有的顶部定位，避免冲突 */
-  bottom: 100%; /* 下拉菜单的「底部」与父容器（.profile-container）的「顶部」对齐 */
-  left: 100%; /* 保持水平方向：在侧边栏右侧展开 */
-  margin-left: 8px; /* 水平方向：与侧边栏的间距（原样式保留，可微调） */
-  margin-bottom: 8px; /* 垂直方向：与个人中心按钮的间距（避免贴紧，可按需调整） */
+  top: auto;
+  bottom: 100%;
+  left: 100%;
+  margin-left: 8px;
+  margin-bottom: 8px;
   z-index: 1001;
-  /* 确保下拉菜单不会被侧边栏裁剪（原功能保留） */
 }
 
 .dropdown-content {

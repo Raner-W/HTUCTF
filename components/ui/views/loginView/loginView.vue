@@ -1,24 +1,13 @@
 <template>
-  <LayoutWithSidebar>
+  <indexSidebarLayout>
     <div class="auth-container">
       <div class="auth-card">
         <div class="auth-header">
-          <h1>注册</h1>
-          <p>加入HTUCTF平台，开启CTF之旅</p>
+          <h1>登录</h1>
+          <p>欢迎回到HTUCTF平台</p>
         </div>
 
-        <form class="auth-form" @submit.prevent="handleRegister">
-          <div class="form-group">
-            <label for="username">用户名</label>
-            <input
-                id="username"
-                type="text"
-                v-model="form.username"
-                placeholder="请输入用户名"
-                required
-            >
-          </div>
-
+        <form class="auth-form" @submit.prevent="handleLogin">
           <div class="form-group">
             <label for="email">邮箱</label>
             <input
@@ -41,27 +30,19 @@
             >
           </div>
 
-          <div class="form-group">
-            <label for="confirmPassword">确认密码</label>
-            <input
-                id="confirmPassword"
-                type="password"
-                v-model="form.confirmPassword"
-                placeholder="请再次输入密码"
-                required
-            >
-          </div>
-
           <div class="form-options">
             <label class="checkbox">
-              <input type="checkbox" v-model="form.agree" required>
-              <span>我已阅读并同意<a href="#">服务条款</a>和<a href="#">隐私政策</a></span>
+              <input type="checkbox" v-model="form.remember">
+              <span>记住我</span>
             </label>
+            <router-link to="/forgot-password" class="forgot-link">
+              忘记密码？
+            </router-link>
           </div>
 
           <button type="submit" class="auth-btn" :disabled="loading">
-            <span v-if="loading">注册中...</span>
-            <span v-else>注册</span>
+            <span v-if="loading">登录中...</span>
+            <span v-else>登录</span>
           </button>
         </form>
 
@@ -72,66 +53,53 @@
         <div class="social-login">
           <button class="social-btn github">
             <span class="social-icon">🐱</span>
-            GitHub 注册
+            GitHub 登录
           </button>
           <button class="social-btn wechat">
             <span class="social-icon">💬</span>
-            微信注册
+            微信登录
           </button>
         </div>
 
         <div class="auth-footer">
-          <p>已有账号？ <router-link to="/login">立即登录</router-link></p>
+          <p>还没有账号？ <router-link to="/register">立即注册</router-link></p>
         </div>
       </div>
     </div>
-  </LayoutWithSidebar>
+  </indexSidebarLayout>
 </template>
 
 <script setup>
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/src/stores/auth.js';
-import LayoutWithSidebar from './LayoutWithSidebar.vue';
+import indexSidebarLayout from '@/components/ui/layouts/indexSidebarLayout/indexSidebarLayout.vue';
 
 const authStore = useAuthStore();
 const router = useRouter();
 
 const loading = ref(false);
 const form = ref({
-  username: '',
   email: '',
   password: '',
-  confirmPassword: '',
-  agree: false
+  remember: false
 });
 
-const handleRegister = async () => {
-  // 简单的表单验证
-  if (form.value.password !== form.value.confirmPassword) {
-    alert('两次输入的密码不一致');
-    return;
-  }
-
-  if (!form.value.agree) {
-    alert('请同意服务条款和隐私政策');
-    return;
-  }
-
+const handleLogin = async () => {
   loading.value = true;
 
   try {
-    // 模拟注册过程
+    // 模拟登录过程
     await new Promise(resolve => setTimeout(resolve, 1000));
 
-    // 调用Pinia store的登录方法（注册成功后自动登录）
+    // 调用Pinia store的登录方法
     authStore.login();
 
     // 跳转到首页
     router.push('/');
   } catch (error) {
-    console.error('注册失败:', error);
-    alert('注册失败，请稍后重试');
+    console.error('登录失败:', error);
+    alert('登录失败，请检查邮箱和密码');
   } finally {
     loading.value = false;
   }
@@ -204,32 +172,34 @@ const handleRegister = async () => {
 }
 
 .form-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 24px;
 }
 
 .checkbox {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   cursor: pointer;
 }
 
 .checkbox input {
   margin-right: 8px;
-  margin-top: 2px;
 }
 
 .checkbox span {
   font-size: 14px;
   color: #4a5568;
-  line-height: 1.4;
 }
 
-.checkbox a {
+.forgot-link {
+  font-size: 14px;
   color: #4299e1;
   text-decoration: none;
 }
 
-.checkbox a:hover {
+.forgot-link:hover {
   text-decoration: underline;
 }
 
