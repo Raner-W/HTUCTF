@@ -6,6 +6,7 @@ import LoginView from '@/components/ui/views/loginView/loginView.vue'
 import RegisterView from '@/components/ui/views/registerView/registerView.vue'
 import Profile from "@/components/ui/views/profileView/profileView.vue";
 import ChallengeView from "@/components/ui/views/challengeView/challengeView.vue";
+import ForgetPasswordView from "@/components/ui/views/forgetPasswordView/ForgetPasswordView.vue";
 
 const routes = [
     {
@@ -46,6 +47,11 @@ const routes = [
         name: 'Challenge',
         component: ChallengeView
     },
+    {
+        path: '/forgot-password',
+        name: 'Forgot Password',
+        component: ForgetPasswordView
+    }
 ]
 
 const router = createRouter({
