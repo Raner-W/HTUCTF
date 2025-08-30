@@ -6,6 +6,7 @@ import LoginView from '@/components/ui/views/loginView/loginView.vue'
 import RegisterView from '@/components/ui/views/registerView/registerView.vue'
 import Profile from "@/components/ui/views/profileView/profileView.vue";
 import ChallengeView from "@/components/ui/views/challengeView/challengeView.vue";
+
 const routes = [
     {
         path: '/',
@@ -25,7 +26,10 @@ const routes = [
     {
         path: '/login',
         name: 'Login',
-        component: LoginView
+        component: LoginView,
+        meta: {
+            requiresAuth: false
+        }
     },
     {
         path: '/register',
@@ -42,7 +46,6 @@ const routes = [
         name: 'Challenge',
         component: ChallengeView
     },
-
 ]
 
 const router = createRouter({
@@ -50,4 +53,4 @@ const router = createRouter({
     routes
 })
 
-export default router
+export default router;

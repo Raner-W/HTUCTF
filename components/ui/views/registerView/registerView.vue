@@ -1,21 +1,25 @@
 <template>
   <indexSidebarLayout>
-    <div class="regedit-container">
-      <!-- 引入注册表单组件 -->
-      <RegeditFormComponent />
+    <div class="auth-container">
+      <registerFormComponent @registerSuccess="handleRegisterSuccess" />
     </div>
   </indexSidebarLayout>
 </template>
 
-<script setup>
-// 引入布局组件和注册表单组件
-import RegeditFormComponent from '@/components/ui/components/regeditComponent/RegeditFormComponent.vue';
-import indexSidebarLayout from '@/components/ui/layouts/indexSidebarLayout/indexSidebarLayout.vue';
+<script setup lang="ts">
+import indexSidebarLayout from '@/components/ui/layouts/indexSidebarLayout/indexSidebarLayout.vue'
+import registerFormComponent from '@/components/ui/components/registerComponent/registerFormComponent.vue'
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+
+const handleRegisterSuccess = () => {
+  router.push('/login?registered=true')
+}
 </script>
 
 <style scoped>
-/* 页面级样式：控制表单容器的布局 */
-.regedit-container {
+.auth-container {
   display: flex;
   justify-content: center;
   align-items: center;

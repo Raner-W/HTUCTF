@@ -1,3 +1,5 @@
+<!--htuctf/components/ui/components/challengeDetailComponent/challengeDetailComponent.vue-->
+
 <template>
   <div class="problem-detail-container">
     <!-- 未选题目提示 -->

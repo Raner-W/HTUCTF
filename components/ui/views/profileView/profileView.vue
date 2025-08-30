@@ -20,7 +20,7 @@
 
 <script setup>
 import { useRouter } from 'vue-router';
-import { useAuthStore } from '@/src/stores/auth.js';
+import { useAuthStore } from '@/src/stores/auth.ts';
 import indexSidebarLayout from '@/components/ui/layouts/indexSidebarLayout/indexSidebarLayout.vue';
 import profileHeaderComponent from '@/components/ui/components/profileComponent/profileHeaderComponent.vue';
 import profileDetailsComponent from '@/components/ui/components/profileComponent/profileDetailsComponent.vue';
