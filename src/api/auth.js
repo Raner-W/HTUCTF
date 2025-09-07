@@ -3,13 +3,14 @@ import request from '@/src/utils/request';
 // 发送验证码 - 调用 Java 后端 /sendCode 接口
 export const sendCaptcha = (email, type = 'register') => {
     return request({
-        url: '/user/sendCode',
+        url: '/user/sendCaptcha',
         method: 'GET',
         params: { email, type }
     });
 };
 
 // 注册 - 调用 Java 后端注册接口
+// 注册接口调整
 export const register = (data) => {
     return request({
         url: '/user/register',
@@ -17,13 +18,13 @@ export const register = (data) => {
         data: {
             email: data.email,
             password: data.password,
-            nickname: data.nickname, // 添加昵称字段
-            code: data.code // 使用 code 而不是 captcha
+            name: data.nickname, // 后端期望的是name而不是nickname
+            captcha: data.code // 后端期望的是captcha而不是code
         }
     });
 };
 
-// 登录 - 调用 Java 后端登录接口
+// 登录接口调整
 export const login = (data) => {
     return request({
         url: '/user/login',
@@ -31,7 +32,6 @@ export const login = (data) => {
         data: {
             email: data.email,
             password: data.password
-            // 根据你的 Java 后端，可能不需要验证码
         }
     });
 };

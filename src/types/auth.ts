@@ -5,11 +5,11 @@ export interface LoginResponse {
     data?: {
         token: string;
         userInfo: {
-            id: number | string;
+            id: number;
+            username: string;
             email: string;
-            username?: string;
-            nickname?: string;
-            avatar?: string;
+            createdAt?: string; // 后端返回的字段
+            // 前端期望的nickname和avatar可能需要从username和其他字段映射
         };
     };
 }
