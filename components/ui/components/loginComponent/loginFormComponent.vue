@@ -95,50 +95,43 @@
     </div>
   </indexSidebarLayout>
 </template>
-
 <script setup lang="ts">
 import { ref, reactive } from 'vue'
 import { useRouter } from 'vue-router'
-// 引入侧边栏布局：路径与注册页保持一致
 import indexSidebarLayout from '@/components/ui/layouts/indexSidebarLayout/indexSidebarLayout.vue'
-// 引入authStore：保留原登录逻辑
 import { useAuthStore } from '@/src/stores/auth.js'
+import request from '@/src/utils/request.ts'
 
 const router = useRouter()
 const authStore = useAuthStore()
 const emit = defineEmits(['loginSuccess'])
 
-// 表单数据：保留原登录页字段（邮箱、密码、记住我）
+// 表单数据：保留原字段
 const form = reactive({
   email: '',
   password: '',
-  remember: false // 记住我功能
+  remember: false
 })
 
-// 表单字段错误提示：与注册页errors结构一致
+// 错误提示：保留原结构
 const errors = reactive({
   email: '',
   password: ''
 })
-
-// 全局登录错误提示：和注册页registerError逻辑一致
 const loginError = ref<string | null>(null)
-
-// 加载状态：与注册页loading样式同步
 const loading = ref(false)
 
-// 清除单个字段错误：复用注册页逻辑
+// 清除错误：保留原逻辑
 const clearError = (field: keyof typeof errors) => {
   errors[field] = ''
   loginError.value = null
 }
 
-// 表单基础校验：贴合整体风格，无额外组件依赖
+// 表单校验：保留原逻辑
 const validateForm = (): boolean => {
   let isValid = true
   const emailReg = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
-  // 邮箱校验
   if (!form.email.trim()) {
     errors.email = '请输入邮箱'
     isValid = false
@@ -147,7 +140,6 @@ const validateForm = (): boolean => {
     isValid = false
   }
 
-  // 密码校验
   if (!form.password.trim()) {
     errors.password = '请输入密码'
     isValid = false
@@ -156,39 +148,62 @@ const validateForm = (): boolean => {
   return isValid
 }
 
-// 核心登录逻辑：保留原authStore调用
+// 核心登录逻辑：修复数据提取路径，匹配后端响应
 const handleLogin = async () => {
-  // 先做前端表单校验
   if (!validateForm()) return
 
   loading.value = true
   loginError.value = null
 
   try {
-    // 调用登录接口（与原逻辑一致）
-    await authStore.login(form)
+    // 1. 调用登录接口（和之前一致）
+    const response = await request({
+      url: '/user/login',
+      method: 'POST',
+      data: {
+        email: form.email.trim(),
+        password: form.password.trim()
+      }
+    })
+
+    // 2. 关键修复：按后端实际响应提取数据（单层data，只有token，没有refreshToken）
+    const { userInfo, token } = response.data; // 正确路径：response.data（统一响应）.data（业务数据）
+    const username = userInfo.username; // 从userInfo里拿用户名
+    const userEmail = userInfo.email; // 从userInfo里拿邮箱
+
+    // 3. 调用authStore存储（token加Bearer前缀，适配axios拦截器）
+    authStore.loginSuccess({
+      accessToken: `Bearer ${token}`, // 后端只有1个token，用它当accessToken
+      username: username,
+      email: userEmail,
+      remember: form.remember
+    })
+
+    // 4. 登录成功流程（和之前一致）
     emit('loginSuccess')
-    // 登录成功跳转首页
-    router.push('/index')
+    router.push('/')
+
   } catch (error: any) {
-    // 错误提示：优先用后端返回信息，无则用默认提示
+    // 新增：打印错误详情，方便后续调试
+    console.error('登录异常详情：', error);
+    // 错误提示：优先用后端返回，无则默认
     loginError.value = error.response?.data?.message || '登录失败，请检查邮箱或密码'
   } finally {
     loading.value = false
   }
 }
 
-// 第三方登录逻辑：保留原交互，可后续对接后端授权接口
+// 第三方登录：保留原逻辑（后续适配时再调整）
 const handleGithubLogin = () => {
   console.log('触发GitHub登录')
-  // 实际场景：跳转后端GitHub授权接口（示例路径）
-  window.location.href = `${import.meta.env.VITE_API_BASE_URL}/oauth/github`
+  const redirectUri = encodeURIComponent(`${window.location.origin}/login/callback?provider=github`)
+  window.location.href = `${import.meta.env.VITE_API_BASE_URL}/oauth/github?redirect_uri=${redirectUri}`
 }
 
 const handleWechatLogin = () => {
   console.log('触发微信登录')
-  // 实际场景：跳转后端微信授权接口（示例路径）
-  window.location.href = `${import.meta.env.VITE_API_BASE_URL}/oauth/wechat`
+  const redirectUri = encodeURIComponent(`${window.location.origin}/login/callback?provider=wechat`)
+  window.location.href = `${import.meta.env.VITE_API_BASE_URL}/oauth/wechat?redirect_uri=${redirectUri}`
 }
 </script>
 

@@ -8,11 +8,11 @@
         <!-- 引入详情组件 -->
         <profileDetailsComponent :user-info="authStore.userInfo" />
 
-        <!-- 引入操作按钮组件，并监听事件 -->
-        <profileActionsComponent
-            @editProfile="editProfile"
-            @logout="handleLogout"
-        />
+<!--        &lt;!&ndash; 引入操作按钮组件，并监听事件 &ndash;&gt;-->
+<!--        <profileActionsComponent-->
+<!--            @editProfile="editProfile"-->
+<!--            @logout="handleLogout"-->
+<!--        />-->
       </div>
     </div>
   </indexSidebarLayout>
@@ -24,7 +24,7 @@ import { useAuthStore } from '@/src/stores/auth.ts';
 import indexSidebarLayout from '@/components/ui/layouts/indexSidebarLayout/indexSidebarLayout.vue';
 import profileHeaderComponent from '@/components/ui/components/profileComponent/profileHeaderComponent.vue';
 import profileDetailsComponent from '@/components/ui/components/profileComponent/profileDetailsComponent.vue';
-import profileActionsComponent from '@/components/ui/components/profileComponent/profileActionsComponent.vue';
+// import profileActionsComponent from '@/components/ui/components/profileComponent/profileActionsComponent.vue';
 
 const authStore = useAuthStore();
 const router = useRouter();

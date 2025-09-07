@@ -1,39 +1,47 @@
+// @/src/stores/auth.ts
 import { defineStore } from 'pinia';
-import { ref, computed } from 'vue';
-import { UserState, LoginRequest, LoginResponse } from '@/src/types/auth';
-import { login } from '@/src/api/auth';
 
-export const useAuthStore = defineStore('auth', () => {
-    const token = ref(localStorage.getItem('htuctf_token') || '');
-    const userInfo = ref(JSON.parse(localStorage.getItem('htuctf_user') || '{}'));
-    const isLogin = computed(() => !!token.value);
+// @/src/stores/auth.js
+export const useAuthStore = defineStore('auth', {
+    state: () => ({
+        token: localStorage.getItem('auth_token') || '', // 只存1个token
+        userInfo: JSON.parse(localStorage.getItem('user_info') || '{}'),
+        isLogin: !!localStorage.getItem('auth_token')
+    }),
 
-    // 登录方法
-    const userLogin = async (form: LoginRequest) => {
-        const res = await login(form);
+    actions: {
+        // 修复：去掉refreshToken参数，只接收需要的字段
+        loginSuccess(data) {
+            // 存储token（带Bearer前缀）
+            this.token = data.accessToken;
+            // 存储用户信息
+            this.userInfo = {
+                username: data.username,
+                email: data.email
+            };
+            this.isLogin = true;
 
-        // 存储 Token 和用户信息
-        const storage = form.remember ? localStorage : sessionStorage;
-        storage.setItem('htuctf_token', res.data!.token);
-        storage.setItem('htuctf_user', JSON.stringify(res.data!.userInfo));
+            // 按"记住我"选择存储方式
+            if (data.remember) {
+                // 长期存储（localStorage）
+                localStorage.setItem('auth_token', this.token);
+                localStorage.setItem('user_info', JSON.stringify(this.userInfo));
+            } else {
+                // 会话存储（关闭浏览器失效）
+                sessionStorage.setItem('auth_token', this.token);
+                sessionStorage.setItem('user_info', JSON.stringify(this.userInfo));
+            }
+        },
 
-        // 更新状态
-        token.value = res.data!.token;
-        userInfo.value = res.data!.userInfo;
-
-        return res.data!;
-    };
-
-    // 登出方法
-    const logout = () => {
-        localStorage.removeItem('htuctf_token');
-        localStorage.removeItem('htuctf_user');
-        sessionStorage.removeItem('htuctf_token');
-        sessionStorage.removeItem('htuctf_user');
-
-        token.value = '';
-        userInfo.value = {};
-    };
-
-    return { token, userInfo, isLogin, login: userLogin, logout };
-});
+        // 登出方法（保留原逻辑）
+        logout() {
+            this.token = '';
+            this.userInfo = {};
+            this.isLogin = false;
+            localStorage.removeItem('auth_token');
+            localStorage.removeItem('user_info');
+            sessionStorage.removeItem('auth_token');
+            sessionStorage.removeItem('user_info');
+        }
+    }
+})

@@ -42,20 +42,19 @@
           <transition name="dropdown">
             <div class="profile-dropdown" v-if="isProfileOpen">
               <div class="dropdown-content">
-                <template v-if="!authStore.isLoggedIn">
+                <!-- 修复：用authStore.isLogin匹配之前定义的登录状态（原isLoggedIn是笔误） -->
+                <template v-if="!authStore.isLogin">
                   <button class="dropdown-item" @click="handleLogin">
                     <span class="dropdown-icon">🔑</span>
                     登录（跳转页面）
                   </button>
-                  <button class="dropdown-item" @click="mockLogin">
-                    <span class="dropdown-icon">📌</span>
-                    模拟登录（测试）
-                  </button>
+                  <!-- 已删除：模拟登录按钮 -->
                 </template>
                 <template v-else>
+                  <!-- 登录后显示：个人信息（带用户名）+ 登出 -->
                   <button class="dropdown-item" @click="handleProfile">
                     <span class="dropdown-icon">👤</span>
-                    个人信息 ({{ authStore.userInfo?.username }})
+                    个人信息 ({{ authStore.userInfo?.username || '未知用户' }})
                   </button>
                   <button class="dropdown-item" @click="handleLogout">
                     <span class="dropdown-icon">🚪</span>
@@ -84,19 +83,14 @@ const router = useRouter();
 const isProfileOpen = ref(false);
 const isDarkMode = ref(false);
 
-const mockLogin = () => {
-  authStore.login({
-    username: 'CTF玩家',
-    id: 1001,
-    avatar: '👤'
-  });
-  isProfileOpen.value = false;
-};
+// 已删除：mockLogin方法（模拟登录功能）
 
+// 下拉菜单切换
 const toggleProfileDropdown = () => {
   isProfileOpen.value = !isProfileOpen.value;
 };
 
+// 点击外部关闭下拉菜单
 const closeDropdown = (event) => {
   const profileContainer = document.querySelector('.profile-container');
   if (profileContainer && !profileContainer.contains(event.target)) {
@@ -104,37 +98,53 @@ const closeDropdown = (event) => {
   }
 };
 
+// 主题切换（保持原逻辑）
 const toggleTheme = () => {
   isDarkMode.value = !isDarkMode.value;
   document.body.classList.toggle('dark-theme', isDarkMode.value);
+  // 新增：主题状态持久化（刷新页面不丢失）
+  localStorage.setItem('darkMode', isDarkMode.value ? '1' : '0');
 };
 
+// 跳转登录页
 const handleLogin = () => {
   router.push('/login');
   isProfileOpen.value = false;
 };
 
+// 跳转个人中心页
 const handleProfile = () => {
   router.push('/profile');
   isProfileOpen.value = false;
 };
 
+// 登出（保持原逻辑，匹配authStore.logout）
 const handleLogout = () => {
   authStore.logout();
   isProfileOpen.value = false;
-  router.push('/');
+  router.push('/'); // 登出后跳首页
 };
 
+// 页面挂载：初始化主题状态+绑定外部点击事件
 onMounted(() => {
+  // 初始化主题（从localStorage读取）
+  const savedDarkMode = localStorage.getItem('darkMode');
+  if (savedDarkMode === '1') {
+    isDarkMode.value = true;
+    document.body.classList.add('dark-theme');
+  }
+  // 绑定外部点击关闭下拉菜单
   document.addEventListener('click', closeDropdown);
 });
 
+// 页面卸载：解绑事件
 onUnmounted(() => {
   document.removeEventListener('click', closeDropdown);
 });
 </script>
 
 <style scoped>
+/* 原有样式不变，仅删除无用的.dropdown-content.logged-in类（已用v-if替代） */
 .ctf-container {
   width: 100%;
   min-height: 100vh;
@@ -356,9 +366,7 @@ onUnmounted(() => {
   font-size: 14px;
 }
 
-.dropdown-content.logged-in .dropdown-item + .dropdown-item {
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-}
+/* 已删除：.dropdown-content.logged-in 无用样式 */
 
 .dropdown-enter-active,
 .dropdown-leave-active {
