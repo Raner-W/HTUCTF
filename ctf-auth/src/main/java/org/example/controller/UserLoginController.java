@@ -45,29 +45,33 @@ public class UserLoginController {
     // 异步发送验证码（独立接口）
     @GetMapping("/sendCaptcha")
     public ResponseEntity<String> sendCaptcha(
-            @RequestParam String email,
-            @RequestParam(required = false, defaultValue = "register") String type
+            @RequestParam("email") String email,
+            @RequestParam(value = "type", required = false, defaultValue = "register") String type
     ) {
         log.info("异步发送验证码: 邮箱={}, 类型={}", email, type);
         userLoginService.asyncSendVerificationCode(email, type);
         return ResponseEntity.ok("验证码发送请求已接收");
     }
 
+
     //用户登录
     //懒得写loginvo了就用registervo了
     @PostMapping("/login")
-    public ResultVO<UserLoginVO> login(@RequestBody UserLoginDTO userLoginDTO) {
+    public ResultVO<Map<String, Object>> login(@RequestBody UserLoginDTO userLoginDTO) {
         log.info("用户登录:  {}", userLoginDTO);
-        UserLoginVO  userloginVO = userLoginService.login(userLoginDTO).getData();
+        UserLoginVO userloginVO = userLoginService.login(userLoginDTO).getData();
 
-
-        //弄个Token
-        //生成JWT token
         // 生成JWT Token
-        String token = jwtUtil.generateAccessToken(userloginVO.getId());
-        //构建返回对象
-        return ResultVO.success(userloginVO);
+        String token = jwtUtil.generateAccessToken(userloginVO.getId()); // 直接调用实例方法
+
+        // 构建返回对象，包含token和用户信息
+        Map<String, Object> data = new HashMap<>();
+        data.put("token", token);
+        data.put("userInfo", userloginVO);
+
+        return ResultVO.success(data);
     }
+
 
 
     // 忘记密码-重置密码

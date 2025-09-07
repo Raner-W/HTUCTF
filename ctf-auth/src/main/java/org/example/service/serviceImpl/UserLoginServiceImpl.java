@@ -22,6 +22,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.concurrent.TimeUnit;
 
 import static org.example.domain.vo.ResultVO.fail;
@@ -47,7 +48,7 @@ public class UserLoginServiceImpl implements UserLoginService {
     public ResultVO register(UserRegisterDTO userRegisterDTO) {
         String email = userRegisterDTO.getEmail();
         String password = userRegisterDTO.getPassword();
-        String nickname = userRegisterDTO.getName();
+        String username = userRegisterDTO.getName();
         String code = userRegisterDTO.getCaptcha();
 
         // 获取邮箱所对应的用户
@@ -60,7 +61,7 @@ public class UserLoginServiceImpl implements UserLoginService {
         }
 
         // 校验必填字段
-        if (nickname == null || nickname.isEmpty() ||
+        if (username == null || username.isEmpty() ||
                 password == null || password.isEmpty() ||
                 email == null || email.isEmpty()) {
             return ResultVO.fail(400, "请填写完整信息");
@@ -74,8 +75,15 @@ public class UserLoginServiceImpl implements UserLoginService {
             return ResultVO.fail(400, "验证码过期");
         }
 
+        // 将DTO转换为User实体并手动设置创建时间
+        User userToInsert = new User();
+        userToInsert.setUsername(username);
+        userToInsert.setEmail(email);
+        userToInsert.setPassword(password);
+        userToInsert.setCreatedAt(LocalDateTime.now()); // 手动设置创建时间
+
         // 插入用户信息
-        int rowsAffected = userLoginMapper.insert(userRegisterDTO);
+        int rowsAffected = userLoginMapper.insertUser(userToInsert);
 
         if (rowsAffected > 0) {
             User newUser = userLoginMapper.findByEmail(userRegisterDTO.getEmail());
@@ -136,7 +144,7 @@ public class UserLoginServiceImpl implements UserLoginService {
     @Override
     public void resetPassword(ResetPasswordDTO resetPasswordDTO) {
         String email = resetPasswordDTO.getEmail();
-        String newPassword = resetPasswordDTO.getPassword();
+        String password = resetPasswordDTO.getPassword();
         String captcha = resetPasswordDTO.getCaptcha();
         String type = "reset";
 
@@ -155,7 +163,7 @@ public class UserLoginServiceImpl implements UserLoginService {
         }
 
         // 3. 更新密码
-        int rows = userLoginMapper.updatePasswordByEmail(email, newPassword);
+        int rows = userLoginMapper.updatePasswordByEmail(email, password);
         if (rows <= 0) {
             throw new RuntimeException("密码更新失败");
         }

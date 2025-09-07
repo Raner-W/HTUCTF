@@ -32,16 +32,18 @@ public class JwtUtil {
     private String secret;
 
     // 访问令牌过期时间（单位：秒，如3600=1小时）
-    @Value("${jwt.expiration}")
+    @Value("${jwt.expiration:3600}")
     private Long accessExpirationSeconds;
 
     // 刷新令牌过期时间（单位：秒，如604800=7天）
-    @Value("${jwt.refresh-expiration}")
+    @Value("${jwt.refresh-expiration:604800}")
     private Long refreshExpirationSeconds;
 
     // 获取签名密钥（并校验长度）
     private SecretKey getSigningKey() {
-        byte[] keyBytes = secret.getBytes(StandardCharsets.UTF_8);
+        // 如果secret为空，使用默认值
+        String secretKey = secret != null ? secret : "your-32bytes-secure-secret-key-here-12345678";
+        byte[] keyBytes = secretKey.getBytes(StandardCharsets.UTF_8);
         // 校验密钥长度：HS256需要至少256位（32字节）
         if (keyBytes.length < 32) {
             throw new IllegalArgumentException("JWT密钥长度必须至少32字节（256位），当前长度：" + keyBytes.length);
@@ -49,18 +51,14 @@ public class JwtUtil {
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
-    // 在 JwtUtil 类中添加一个新的重载方法
-    public static String generateAccessToken(Integer userId) {
+    // 生成访问令牌（通过用户ID）
+    public String generateAccessToken(Integer userId) {
         Map<String, Object> claims = new HashMap<>();
         claims.put("userId", userId);
-        // 调用现有 createToken 方法，设置默认用户名和过期时间
-        JwtUtil jwtUtil = new JwtUtil();
-        // 注意：此处需确保能获取到 secret 和 accessExpirationSeconds 的值
-        // 建议改为通过 Spring 注入实例使用，避免静态方法中无法访问实例变量
-        return jwtUtil.createToken(claims, userId.toString(), jwtUtil.accessExpirationSeconds);
+        // 添加空值检查和默认值
+        Long exp = accessExpirationSeconds != null ? accessExpirationSeconds : 3600L;
+        return createToken(claims, userId.toString(), exp);
     }
-
-
 
     // 生成访问令牌（包含用户权限信息）
     public String generateAccessToken(UserDetails userDetails) {
@@ -69,16 +67,25 @@ public class JwtUtil {
         claims.put("authorities", userDetails.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList()));
-        return createToken(claims, userDetails.getUsername(), accessExpirationSeconds);
+        // 添加空值检查和默认值
+        Long exp = accessExpirationSeconds != null ? accessExpirationSeconds : 3600L;
+        return createToken(claims, userDetails.getUsername(), exp);
     }
 
     // 生成刷新令牌（不包含额外权限，仅用于刷新访问令牌）
     public String generateRefreshToken(UserDetails userDetails) {
-        return createToken(new HashMap<>(), userDetails.getUsername(), refreshExpirationSeconds);
+        // 添加空值检查和默认值
+        Long exp = refreshExpirationSeconds != null ? refreshExpirationSeconds : 604800L;
+        return createToken(new HashMap<>(), userDetails.getUsername(), exp);
     }
 
     // 核心：创建令牌的通用方法
     private String createToken(Map<String, Object> claims, String subject, Long expirationSeconds) {
+        // 双重保障：确保expirationSeconds不为null
+        if (expirationSeconds == null) {
+            expirationSeconds = 3600L; // 默认1小时
+        }
+
         Date now = new Date();
         Date expirationDate = new Date(now.getTime() + expirationSeconds * 1000);
 
