@@ -35,10 +35,23 @@ export const login = (data) => {
         }
     });
 };
+//忘记密码
+export const resetPassword = (data) => {
+    return request({
+        url: '/user/resetPassword',
+        method: 'POST',
+        data: {
+            email: data.email,
+            password: data.password,
+            captcha: data.code // 后端期望的是captcha而不是code
+        }
+    });
+};
 
 // auth.js 中的导出方式（默认导出）
 export default {
     sendCaptcha,
     register,
-    login
+    login,
+    resetPassword
 };
