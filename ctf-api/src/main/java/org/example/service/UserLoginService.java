@@ -4,7 +4,6 @@ package org.example.service;
 import org.example.domain.dto.ResetPasswordDTO;
 import org.example.domain.dto.UserLoginDTO;
 import org.example.domain.dto.UserRegisterDTO;
-import org.example.domain.po.User;
 import org.example.domain.vo.ResultVO;
 import org.example.domain.vo.UserLoginVO;
 import org.example.domain.vo.UserRegisterVO;

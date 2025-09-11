@@ -15,6 +15,7 @@ import org.example.service.UserLoginService;
 import org.example.util.VerifyCodeUtil;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.mail.SimpleMailMessage;
@@ -29,6 +30,7 @@ import static org.example.domain.vo.ResultVO.fail;
 
 @Slf4j
 @Service
+//@ConditionalOnClass(JavaMailSender.class)
 public class UserLoginServiceImpl implements UserLoginService {
 
     @Resource

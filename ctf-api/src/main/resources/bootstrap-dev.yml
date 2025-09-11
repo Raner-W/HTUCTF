@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: api-service
+  config:
+    import: nacos:api-service-dev.yml
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848
+      config:
+        server-addr: localhost:8848
+        file-extension: yml
+        refresh-enabled: true
+        auto-refresh: true
+        enable-remote-sync-config: true
+

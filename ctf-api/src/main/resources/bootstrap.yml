@@ -1,0 +1,15 @@
+spring:
+  application:
+    name: api-service
+  # 移除下面这行
+  # config:
+  #   import: nacos:api-service-dev.yml
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848
+
+# 添加本地配置
+server:
+  port: 8084
+   

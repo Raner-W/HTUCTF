@@ -18,7 +18,7 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         // 允许访问认证相关接口
-                        .requestMatchers("/user/register", "/user/login", "/user/sendCaptcha", "/user/resetPassword").permitAll()
+                        .requestMatchers("/user/register", "/user/login", "/user/sendCaptcha", "/user/resetPassword", "/user/verifyCaptcha", "/user/verifyToken").permitAll()
                         // 允许访问actuator端点
                         .requestMatchers("/actuator/**").permitAll()
                         // 其他请求需要认证

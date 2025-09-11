@@ -141,7 +141,7 @@ public class JwtUtil {
     }
 
     // 判断令牌是否过期
-    private boolean isTokenExpired(String token) {
+    public boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
     }
 }
