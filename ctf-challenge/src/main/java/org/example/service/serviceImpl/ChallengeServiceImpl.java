@@ -6,9 +6,12 @@ import org.example.domain.po.Category;
 import org.example.domain.po.Challenge;
 import org.example.domain.vo.CategoryWithChallengesVO;
 import org.example.domain.vo.ChallengeInCategoryVO;
+import org.example.domain.vo.ChallengeVO;
+import org.example.domain.vo.ResultVO;
 import org.example.mapper.CategoryMapper;
 import org.example.mapper.ChallengeMapper;
 import org.example.service.ChallengeService;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -66,4 +69,39 @@ public class ChallengeServiceImpl implements ChallengeService {
         log.info("查询到{}个题目分类及旗下题目信息", result.size());
         return result;
     }
+
+    @Override
+    public ChallengeVO getChallengeDetail(Integer id) {
+        // 1. 查询题目详情
+        Challenge challenge = challengeMapper.selectById(id);
+        if (challenge == null) {
+            log.warn("未查询到id为{}的题目", id);
+            return null;
+        }
+
+        // 2. 构建题目详情VO
+        ChallengeVO challengeVO = new ChallengeVO();
+        challengeVO.setId(challenge.getId());
+        challengeVO.setTitle(challenge.getTitle());
+        challengeVO.setDescription(challenge.getDescription());
+        challengeVO.setPoints(challenge.getPoints());
+        challengeVO.setDifficulty(challenge.getDifficulty().name());
+        challengeVO.setAttachmentUrl(challenge.getAttachmentUrl());
+        challengeVO.setSolvesCount(challenge.getSolvesCount());
+        challengeVO.setIsVisible(challenge.getIsVisible());
+        challengeVO.setCreatedAt(challenge.getCreatedAt());
+        challengeVO.setUpdatedAt(challenge.getUpdatedAt());
+
+        // 直接使用已有的 category 对象
+        if (challenge.getCategory() != null) {
+            challengeVO.setCategoryName(challenge.getCategory().getName());
+        }
+
+        // 3. 返回题目详情VO
+        return challengeVO;
+    }
+
+
+
+
 }

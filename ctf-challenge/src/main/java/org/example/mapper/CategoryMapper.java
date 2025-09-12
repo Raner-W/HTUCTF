@@ -17,4 +17,12 @@ public interface CategoryMapper {
      */
     @Select("SELECT id, name, description FROM categories ORDER BY id ASC")
     List<Category> selectAllCategories();
+
+    @Select("SELECT id, name FROM categories WHERE id = #{id}")
+    Category selectById(Integer id);
+
+    @Select("SELECT id, name FROM categories WHERE id = #{id}")
+    Category selectCategoryById(Integer id);
+
+
 }

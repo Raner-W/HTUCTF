@@ -3,13 +3,11 @@ package org.example.controller;
 import com.alibaba.nacos.api.model.v2.Result;
 import lombok.extern.slf4j.Slf4j;
 import org.example.domain.vo.CategoryWithChallengesVO;
+import org.example.domain.vo.ChallengeVO;
 import org.example.domain.vo.ResultVO;
 import org.example.service.ChallengeService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -31,13 +29,26 @@ public class ChallengeController {
             return ResultVO.fail(500,"获取分类列表失败，请稍后重试");
         }
     }
+    //获取题目详情
+    @GetMapping("/{id}")
+    public ResultVO<ChallengeVO> getChallengeDetail(@PathVariable("id") Integer id) {
+        try {
+            ChallengeVO challengeDetail = challengeService.getChallengeDetail(id);
+            if (challengeDetail == null) {
+                return ResultVO.fail(404, "题目不存在");
+            }
+            return ResultVO.success(challengeDetail);
+        } catch (Exception e) {
+            log.error("获取题目详情失败", e);
+            return ResultVO.fail(500, "获取题目详情失败，请稍后重试");
+        }
+    }
 
-//    //获取题目详情
-//    @GetMapping("/{id}")
-//
-//
-//
-//
+
+
+
+
+
 //    //下载题目附件
 //    @GetMapping("/{id}/attachment")
 //

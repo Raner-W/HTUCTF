@@ -1,8 +1,6 @@
 package org.example.mapper;
 
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.*;
 import org.example.domain.po.Challenge;
 import org.springframework.stereotype.Repository;
 
@@ -22,4 +20,26 @@ public interface ChallengeMapper {
             "AND is_visible = 1 " +  // 只查可见题目
             "ORDER BY points ASC")
     List<Challenge> selectByCategoryId(@Param("categoryId") Integer categoryId);
+    /**
+     * 根据题目ID查询题目详情
+     */
+    @Select("SELECT id, title, description, category_id, points, difficulty, attachment_url, solves_count, is_visible, created_at, updated_at " +
+            "FROM challenges WHERE id = #{id}")
+    @Results({
+            @Result(property = "id", column = "id"),
+            @Result(property = "title", column = "title"),
+            @Result(property = "description", column = "description"),
+            @Result(property = "points", column = "points"),
+            @Result(property = "difficulty", column = "difficulty"),
+            @Result(property = "attachmentUrl", column = "attachment_url"),
+            @Result(property = "solvesCount", column = "solves_count"),
+            @Result(property = "isVisible", column = "is_visible"),
+            @Result(property = "createdAt", column = "created_at"),
+            @Result(property = "updatedAt", column = "updated_at"),
+            @Result(property = "category", column = "category_id",
+                    one = @One(select = "org.example.mapper.CategoryMapper.selectCategoryById"))
+    })
+    Challenge selectById(Integer id);
+
+
 }
