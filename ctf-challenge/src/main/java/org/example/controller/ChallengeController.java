@@ -1,6 +1,7 @@
 package org.example.controller;
 
 import com.alibaba.nacos.api.model.v2.Result;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.example.domain.vo.CategoryWithChallengesVO;
 import org.example.domain.vo.ChallengeVO;
@@ -32,6 +33,7 @@ public class ChallengeController {
     //获取题目详情
     @GetMapping("/{id}")
     public ResultVO<ChallengeVO> getChallengeDetail(@PathVariable("id") Integer id) {
+        log.info("获取题目详情，题目id：{}", id);
         try {
             ChallengeVO challengeDetail = challengeService.getChallengeDetail(id);
             if (challengeDetail == null) {
@@ -45,16 +47,17 @@ public class ChallengeController {
     }
 
 
+    //下载题目附件
+    @GetMapping("/{id}/attachment")
+    public void downloadAttachment(@PathVariable("id") Integer id, HttpServletResponse response) {
+        //下载题目的id和 附件url
+        log.info("下载题目附件，题目id{} 和 附件地址{} " , id, response );
+        challengeService.downloadAttachment(id, response);
+    }
 
 
 
 
-//    //下载题目附件
-//    @GetMapping("/{id}/attachment")
-//
-//
-//
-//
 //    //提交flag
 //    @PostMapping("/{id}/submit")
 }

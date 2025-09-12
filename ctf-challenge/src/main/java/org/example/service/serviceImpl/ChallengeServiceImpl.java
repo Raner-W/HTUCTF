@@ -1,7 +1,12 @@
 package org.example.service.serviceImpl;
 
 import com.alibaba.nacos.client.naming.utils.CollectionUtils;
+import com.aliyun.oss.OSS;
+import com.aliyun.oss.OSSClientBuilder;
+import com.aliyun.oss.model.OSSObject;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.example.config.OssConfig;
 import org.example.domain.po.Category;
 import org.example.domain.po.Challenge;
 import org.example.domain.vo.CategoryWithChallengesVO;
@@ -12,8 +17,13 @@ import org.example.mapper.CategoryMapper;
 import org.example.mapper.ChallengeMapper;
 import org.example.service.ChallengeService;
 import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import org.apache.commons.io.IOUtils; // 使用 Apache Commons IO
+
+import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -24,6 +34,8 @@ import java.util.stream.Collectors;
 public class ChallengeServiceImpl implements ChallengeService {
     private final CategoryMapper categoryMapper;
     private final ChallengeMapper challengeMapper;
+    @Autowired
+    private OssConfig ossConfig;
 
     // 构造器注入Mapper
     public ChallengeServiceImpl(CategoryMapper categoryMapper, ChallengeMapper challengeMapper) {
@@ -100,6 +112,68 @@ public class ChallengeServiceImpl implements ChallengeService {
         // 3. 返回题目详情VO
         return challengeVO;
     }
+    @Override
+    public void downloadAttachment(Integer id, HttpServletResponse response) {
+        try {
+            // 1. 查询题目详情
+            Challenge challenge = challengeMapper.selectById(id);
+            if (challenge == null) {
+                log.warn("未查询到id为{}的题目", id);
+                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                response.getWriter().write("题目不存在");
+                return;
+            }
+
+            // 2. 检查是否有附件
+            String attachmentUrl = challenge.getAttachmentUrl();
+            if (attachmentUrl == null || attachmentUrl.isEmpty()) {
+                response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                response.getWriter().write("附件不存在");
+                return;
+            }
+
+            // 3. 从OSS下载文件
+            OSS ossClient = new OSSClientBuilder().build(
+                    ossConfig.getEndpoint(),
+                    ossConfig.getAccessKeyId(),
+                    ossConfig.getAccessKeySecret()
+            );
+
+            try {
+                // 假设attachmentUrl存储的是OSS中的对象名
+                OSSObject ossObject = ossClient.getObject(ossConfig.getBucketName(), attachmentUrl);
+
+                // 4. 设置响应头
+                response.setContentType("application/octet-stream");
+                response.setHeader("Content-Disposition", "attachment; filename=" +
+                        URLEncoder.encode(attachmentUrl, "UTF-8"));
+
+                // 5. 将文件内容写入响应
+                IOUtils.copy(ossObject.getObjectContent(), response.getOutputStream());
+                response.getOutputStream().flush();
+
+                // 6. 记录下载日志
+                log.info("成功下载题目(id={})的附件: {}", id, attachmentUrl);
+
+                // 关闭OSS对象
+                ossObject.close();
+            } finally {
+                if (ossClient != null) {
+                    ossClient.shutdown();
+                }
+            }
+        } catch (Exception e) {
+            log.error("下载附件失败，题目id：{}", id, e);
+            try {
+                response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+                response.getWriter().write("下载附件失败");
+            } catch (IOException ioException) {
+                log.error("写入响应失败", ioException);
+            }
+        }
+    }
+
+
 
 
 

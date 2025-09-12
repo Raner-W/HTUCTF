@@ -1,5 +1,6 @@
 package org.example.service;
 
+import jakarta.servlet.http.HttpServletResponse;
 import org.example.domain.vo.CategoryWithChallengesVO;
 import org.example.domain.vo.ChallengeVO;
 import org.example.domain.vo.ResultVO;
@@ -11,4 +12,6 @@ public interface ChallengeService {
 
 
     ChallengeVO getChallengeDetail(Integer id); // 改为返回 ChallengeVO
+
+    void downloadAttachment(Integer id, HttpServletResponse response);
 }

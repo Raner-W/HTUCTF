@@ -16,7 +16,20 @@
         <module>ctf-api</module>
     </modules>
 
+    <!-- 添加镜像仓库 -->
     <repositories>
+        <!-- 阿里云中央仓库镜像 -->
+        <repository>
+            <id>aliyun-central</id>
+            <name>Aliyun Central Repository</name>
+            <url>https://maven.aliyun.com/repository/central</url>
+        </repository>
+        <!-- 阿里云公共仓库镜像 -->
+        <repository>
+            <id>aliyun-public</id>
+            <name>Aliyun Public Repository</name>
+            <url>https://maven.aliyun.com/repository/public</url>
+        </repository>
         <repository>
             <id>central</id>
             <url>https://repo.maven.apache.org/maven2</url>
@@ -46,13 +59,23 @@
         </repository>
     </repositories>
 
-
+    <!-- 添加插件仓库镜像 -->
+    <pluginRepositories>
+        <pluginRepository>
+            <id>aliyun-plugin</id>
+            <name>Aliyun Plugin Repository</name>
+            <url>https://maven.aliyun.com/repository/public</url>
+        </pluginRepository>
+        <pluginRepository>
+            <id>central</id>
+            <url>https://repo.maven.apache.org/maven2</url>
+        </pluginRepository>
+    </pluginRepositories>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-
 
         <!-- Spring相关版本 -->
         <spring-boot.version>3.2.0</spring-boot.version>
@@ -62,13 +85,20 @@
 
         <!-- 其他常用依赖版本 -->
         <lombok.version>1.18.30</lombok.version>
-
     </properties>
-
 
     <dependencyManagement>
         <dependencies>
             <!-- Spring Boot Starter Parent -->
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-parent</artifactId>
+                <version>${spring-boot.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+
+            <!-- Spring Boot Dependencies -->
             <dependency>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-dependencies</artifactId>
@@ -105,8 +135,16 @@
         </dependencies>
     </dependencyManagement>
 
-
-
-
-
+    <!-- 添加build配置以支持Spring Boot -->
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-maven-plugin</artifactId>
+                    <version>${spring-boot.version}</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
 </project>
