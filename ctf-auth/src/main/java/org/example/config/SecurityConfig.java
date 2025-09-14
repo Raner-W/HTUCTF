@@ -17,6 +17,8 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
+                        // 允许 OPTIONS 请求
+                        .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
                         // 允许访问认证相关接口
                         .requestMatchers("/user/register", "/user/login", "/user/sendCaptcha", "/user/resetPassword", "/user/verifyCaptcha", "/user/verifyToken").permitAll()
                         // 允许访问actuator端点
@@ -27,4 +29,5 @@ public class SecurityConfig {
 
         return http.build();
     }
+
 }
