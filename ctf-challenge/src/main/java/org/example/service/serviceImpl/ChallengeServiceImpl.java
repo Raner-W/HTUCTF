@@ -173,9 +173,31 @@ public class ChallengeServiceImpl implements ChallengeService {
         }
     }
 
+    @Override
+    public String submitFlag(Integer id, String flag) {
+        //TODO 不管提交正确与否，提交记录表都需更新
 
 
+        Challenge challenge = challengeMapper.selectById(id);
+        if (challenge == null) {
+            log.warn("未查询到id为{}的题目", id);
+            return "题目不存在";
+        }
+        if (!challenge.getFlag().equals(flag)) {
+            log.warn("用户提交答案错误，题目id：{}，用户答案：{}", id, flag);
+            return "答案错误";
+        }
 
+        //TODO 解题成功则解题记录表也需要更新
+
+
+        //题目表解题数更新
+        challenge.setSolvesCount(challenge.getSolvesCount() + 1);
+        challengeMapper.updateById(challenge);
+        log.info("用户提交答案成功，题目id：{}，用户答案：{}", id, flag);
+
+        return "恭喜，提交成功！";
+    }
 
 
 }

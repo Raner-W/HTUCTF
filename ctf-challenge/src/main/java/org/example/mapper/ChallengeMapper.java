@@ -42,4 +42,6 @@ public interface ChallengeMapper {
     Challenge selectById(Integer id);
 
 
+    @Update("UPDATE challenges SET title = #{title}, description = #{description}, category_id = #{categoryId}, points = #{points}, difficulty = #{difficulty}, attachment_url = #{attachmentUrl}, solves_count = #{solvesCount}, is_visible = #{isVisible}, updated_at = #{updatedAt} WHERE id = #{id}")
+    void updateById(Challenge challenge);
 }

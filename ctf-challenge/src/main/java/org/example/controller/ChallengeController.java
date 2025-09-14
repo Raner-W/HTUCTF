@@ -58,6 +58,17 @@ public class ChallengeController {
 
 
 
-//    //提交flag
-//    @PostMapping("/{id}/submit")
+    //提交flag
+    @PostMapping("/{id}/submit")
+    public ResultVO<String> submitFlag(@PathVariable("id") Integer id, @RequestBody String flag) {
+        log.info("提交flag，题目id：{}，flag：{}", id, flag);
+        try {
+            //提交flag
+            String result = challengeService.submitFlag(id, flag);
+            return ResultVO.success(result);
+        } catch (Exception e) {
+            log.error("提交flag失败", e);
+            return ResultVO.fail(500, "提交flag失败，请稍后重试");
+        }
+    }
 }

@@ -14,4 +14,6 @@ public interface ChallengeService {
     ChallengeVO getChallengeDetail(Integer id); // 改为返回 ChallengeVO
 
     void downloadAttachment(Integer id, HttpServletResponse response);
+
+    String submitFlag(Integer id, String flag);
 }
