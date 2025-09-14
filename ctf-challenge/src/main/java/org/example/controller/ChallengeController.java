@@ -1,12 +1,14 @@
 package org.example.controller;
 
 import com.alibaba.nacos.api.model.v2.Result;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.example.domain.vo.CategoryWithChallengesVO;
 import org.example.domain.vo.ChallengeVO;
 import org.example.domain.vo.ResultVO;
 import org.example.service.ChallengeService;
+import org.example.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,6 +22,9 @@ public class ChallengeController {
     //获取题目分类列表，会在侧边显示不同类型题目名称以及分值
     @Autowired
     private ChallengeService challengeService;
+
+    @Autowired
+    private JwtUtil jwtUtil;
     @GetMapping("/categories")
     public ResultVO<List<CategoryWithChallengesVO>> getCategoryList() {
         try {
@@ -57,18 +62,46 @@ public class ChallengeController {
 
 
 
-
-    //提交flag
+//提交flag
     @PostMapping("/{id}/submit")
-    public ResultVO<String> submitFlag(@PathVariable("id") Integer id, @RequestBody String flag) {
-        log.info("提交flag，题目id：{}，flag：{}", id, flag);
-        try {
-            //提交flag
-            String result = challengeService.submitFlag(id, flag);
-            return ResultVO.success(result);
-        } catch (Exception e) {
-            log.error("提交flag失败", e);
-            return ResultVO.fail(500, "提交flag失败，请稍后重试");
+    public String submitFlag(@PathVariable("id") Integer id,
+                             @RequestParam("flag") String flag,
+                             HttpServletRequest request) {
+
+        // 从请求头获取Token
+        String token = request.getHeader("Authorization");
+        if (token == null) {
+            return "未授权访问";
         }
+
+        // 解析Token获取用户ID
+        Integer userId;
+        try {
+            userId = jwtUtil.extractUserId(token);
+        } catch (Exception e) {
+            return "Token无效或已过期";
+        }
+
+        // 获取客户端IP
+        String ipAddress = getClientIp(request);
+
+        // 团队ID暂时设为null（如果需要可以从Token中解析或从数据库查询）
+        Integer teamId = null;
+
+        return challengeService.submitFlag(id, flag, userId, teamId, ipAddress);
+    }
+
+    private String getClientIp(HttpServletRequest request) {
+        String ip = request.getHeader("X-Forwarded-For");
+        if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("Proxy-Client-IP");
+        }
+        if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("WL-Proxy-Client-IP");
+        }
+        if (ip == null || ip.isEmpty() || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getRemoteAddr();
+        }
+        return ip;
     }
 }

@@ -15,5 +15,8 @@ public interface ChallengeService {
 
     void downloadAttachment(Integer id, HttpServletResponse response);
 
-    String submitFlag(Integer id, String flag);
+    String submitFlag(Integer id, String flag, Integer userId, Integer teamId, String ipAddress);
+
+//    String submitFlag(Integer id, String flag);
+    
 }

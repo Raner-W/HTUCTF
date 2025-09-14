@@ -44,4 +44,32 @@ public interface ChallengeMapper {
 
     @Update("UPDATE challenges SET title = #{title}, description = #{description}, category_id = #{categoryId}, points = #{points}, difficulty = #{difficulty}, attachment_url = #{attachmentUrl}, solves_count = #{solvesCount}, is_visible = #{isVisible}, updated_at = #{updatedAt} WHERE id = #{id}")
     void updateById(Challenge challenge);
+
+
+
+    // 新增方法：获取包含flag的完整题目信息（用于验证答案）
+    @Select("SELECT id, title, description, category_id, points, difficulty, flag, attachment_url, solves_count, is_visible, created_at, updated_at " +
+            "FROM challenges WHERE id = #{id}")
+    @Results({
+            @Result(property = "id", column = "id"),
+            @Result(property = "title", column = "title"),
+            @Result(property = "description", column = "description"),
+            @Result(property = "points", column = "points"),
+            @Result(property = "difficulty", column = "difficulty"),
+            @Result(property = "flag", column = "flag"),
+            @Result(property = "attachmentUrl", column = "attachment_url"),
+            @Result(property = "solvesCount", column = "solves_count"),
+            @Result(property = "isVisible", column = "is_visible"),
+            @Result(property = "createdAt", column = "created_at"),
+            @Result(property = "updatedAt", column = "updated_at"),
+            @Result(property = "category", column = "category_id",
+                    one = @One(select = "org.example.mapper.CategoryMapper.selectCategoryById"))
+    })
+    Challenge selectByIdWithFlag(Integer id);
+
+
+    // ChallengeMapper.java
+    @Update("UPDATE challenges SET solves_count = #{solvesCount}, updated_at = NOW() WHERE id = #{id}")
+    int updateSolvesCount(@Param("id") Integer id, @Param("solvesCount") Integer solvesCount);
 }
+
